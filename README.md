@@ -1,62 +1,90 @@
-# Drill Crypto Functions
+# Phonetic Functions for Apache Drill
+This repository contains a series of phonetic functions to be used with Apache Drill.  These functions are based on the algorithms found in org.apache.commons.codec.language.  This package includes Soundex, Metaphone and Double Metaphone algorithms.
 
-** NOTE:  This library is not done... More algorithms to come **
+## Usage
 
-This library contains a collection of cryptography-related functions for Apache Drill. It generally mirrors the crypto functions in MySQL.  The package includes:
+### Soundex
+The package includes an implementation of the Soundex algorithm which you can read about [here](https://en.wikipedia.org/wiki/Soundex).  Per wikipedia, Soundex is a phonetic algorithm for indexing names by sound, as pronounced in English. The goal is for homophones to be encoded to the same representation so that they can be matched despite minor differences in spelling. The algorithm mainly encodes consonants; a vowel will not be encoded unless it is the first letter. Soundex is the most widely known of all phonetic algorithms (in part because it is a standard feature of popular database software such as DB2, PostgreSQL, MySQL, Ingres, MS SQL Server and Oracle) and is often used (incorrectly) as a synonym for "phonetic algorithm". Improvements to Soundex are the basis for many modern phonetic algorithms.
+
+To obtain the soundex for a word, simply call the soundex function as shown below:
+```
+SELECT soundex( <field> ) FROM <file>;
+```
+### Sounds Like
+There is also a `sounds_like( string1, string2 )` method which compares the soundex values of two strings and returns true if they are equal, false if not.  This is most useful in the `WHERE` clause of a Drill query where you can use it to find data similar to a known value.  For instance:
+
+```
+jdbc:drill:zk=local> select * FROM dfs.drilldev.`names.csv` WHERE sounds_like( columns[0], 'Jayme' );
++--------------------+
+|      columns       |
++--------------------+
+| ["Jaime","jayme"]  |
++--------------------+
+1 row selected (0.263 seconds)
+```
+You can see the full example of everything in the query below.
+
+```
+jdbc:drill:zk=local> select columns[0] as name1,
+columns[1] as name2,
+soundex( columns[0] ) AS soundex_1,
+soundex( columns[1] ) AS soundex_2,
+sounds_like( columns[0], columns[1] ) AS sounds_like
+FROM dfs.drilldev.`names.csv`;
++----------------+-----------------+------------+------------+--------------+
+|     name1      |      name2      | soundex_1  | soundex_2  | sounds_like  |
++----------------+-----------------+------------+------------+--------------+
+| charles        | bob             | C642       | B100       | false        |
+| There          | their           | T600       | T600       | true         |
+| their          | there           | T600       | T600       | true         |
+| they're        | they            | T600       | T000       | false        |
+| Jaime          | jayme           | J500       | J500       | true         |
+| Mohammad       | Muhammad        | M530       | M530       | true         |
+| Charles Givre  | Alisheva Givre  | C642       | A421       | false        |
++----------------+-----------------+------------+------------+--------------+
+7 rows selected (0.228 seconds)
+```
+## Metaphone
+
+## Double Metaphone
 
 
-* **`aes_encrypt()`/ `aes_decrypt()`**: implement encryption and decryption of data using the official AES (Advanced Encryption Standard) algorithm, previously known as “Rijndael.”
- `AES_ENCRYPT()` encrypts the string `str` using the key string `key_str` and returns a binary string containing the encrypted output. `AES_DECRYPT()` decrypts the encrypted string `crypt_str` using the key string `key_str` and returns the original cleartext string. If either function argument is NULL, the function returns NULL.
+## How to Compile and Install
 
-```sql
-> SELECT aes_encrypt( 'encrypted_text', 'my_secret_key' ) AS aes FROM (VALUES(1));
-+---------------------------+
-|            aes            |
-+---------------------------+
-| JkcBUNAn8ByKWCcVmNrKMA==  |
-+---------------------------+
+Clone and compile.
 
- > SELECT aes_encrypt( 'encrypted_text', 'my_secret_key' ) AS encrypted,
- aes_decrypt(aes_encrypt( 'encrypted_text', 'my_secret_key' ),'my_secret_key') AS decrypted 
- FROM (VALUES(1));
-+---------------------------+-----------------+
-|         encrypted         |    decrypted    |
-+---------------------------+-----------------+
-| JkcBUNAn8ByKWCcVmNrKMA==  | encrypted_text  |
-+---------------------------+-----------------+
 ```
 
-* **`md5(<text>)`**:  Returns the md5 hash of the text. (https://en.wikipedia.org/wiki/MD5)
-Usage:
-```sql
-> select md5( 'testing' ) from (VALUES(1));
-+-----------------------------------+
-|              EXPR$0               |
-+-----------------------------------+
-| ae2b1fca515949e5d54fb22b8ed95575  |
-+-----------------------------------+
-```
-* **`sha(<text>`) / `sha1(<text>)`**: Calculates an SHA-1 160-bit checksum for the string, as described in RFC 3174 (Secure Hash Algorithm). (https://en.wikipedia.org/wiki/SHA-1)  The value is returned as a string of 40 hexadecimal digits, or NULL if the argument was NULL. Note that `sha()` and `sha1()` are aliases for the same function. 
-```sql
-> select sha1( 'testing' ) from (VALUES(1));
-+-------------------------------------------+
-|                  EXPR$0                   |
-+-------------------------------------------+
-| dc724af18fbdd4e59189f5fe768a5f8311527050  |
-+-------------------------------------------+
-```
-* **`sha2(<text>`) / `sha256(<text>)`**: Calculates an SHA-2 256-bit checksum for the string. (https://en.wikipedia.org/wiki/SHA-2)  The value is returned as a string of hexadecimal digits, or NULL if the argument was NULL. Note that `sha2()` and `sha256()` are aliases for the same function. 
-```sql
-> select sha2( 'testing' ) from (VALUES(1));
-+-------------------------------------------------------------------+
-|                              EXPR$0                               |
-+-------------------------------------------------------------------+
-| cf80cd8aed482d5d1527d7dc72fceff84e6326592848447d2dc0b0e87dfc9a90  |
-+-------------------------------------------------------------------+
-```
-Additionally, there are also `sha384(<text>)` and `sha512(<text>)` functions which return SHA-2 hashes with 384 and 512 bit checksums.
+git clone https://github.com/cgivre/drill-phonetic-function
 
-## Installing These Functions
-This collection of functions does not have any dependencies that are not already included in Drill.  You can build the functions from source by cloning this repository, navigating to the directory and typing: 
-`mvn clean package -DskipTests`.
-Once you've done that, you'll find two `.jar` files in the `target/` folder.  Copy both these files to `<drill path>/jars/3rdParty`.
+cd drill-phonetic-function
+
+mvn package
+
+```
+
+Copy the jar files from your functions into the 3rdparty directory in the Drill distro
+
+```
+cp drill-phonetic-function/target/*.jar apache-drill-<version>/jars/3rdparty
+```
+
+Now run drill and test the results
+
+```
+$ cd apache-drill-1.8.0/
+$ bin/drill-embedded
+0: jdbc:drill:zk=local>
+SELECT soundex( first_name ) AS soundex from cp.`employee.json` limit 5;
++----------+
+| soundex  |
++----------+
+| S600     |
+| D620     |
+| M240     |
+| M000     |
+| R163     |
++----------+
+5 rows selected (0.534 seconds)
+
+```
