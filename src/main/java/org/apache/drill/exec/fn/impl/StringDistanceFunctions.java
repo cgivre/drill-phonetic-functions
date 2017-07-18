@@ -23,6 +23,7 @@ import org.apache.drill.exec.expr.DrillSimpleFunc;
 import org.apache.drill.exec.expr.annotations.FunctionTemplate;
 import org.apache.drill.exec.expr.annotations.Output;
 import org.apache.drill.exec.expr.annotations.Param;
+import org.apache.drill.exec.expr.holders.Float8Holder;
 import org.apache.drill.exec.expr.holders.IntHolder;
 import org.apache.drill.exec.expr.holders.VarCharHolder;
 
@@ -242,4 +243,191 @@ public class StringDistanceFunctions {
       out.value = result;
     }
   }
+
+  @FunctionTemplate(name = "cosine_distance", scope = FunctionTemplate.FunctionScope.SIMPLE, nulls = FunctionTemplate.NullHandling.NULL_IF_NULL)
+  public static class CosineDistanceFunction implements DrillSimpleFunc {
+
+    @Param
+    VarCharHolder rawInput1;
+
+    @Param
+    VarCharHolder rawInput2;
+
+    @Output
+    Float8Holder out;
+
+    @Inject
+    DrillBuf buffer;
+
+    @Override
+    public void setup() {
+    }
+
+    @Override
+    public void eval() {
+
+      String input1 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput1.start, rawInput1.end, rawInput1.buffer);
+      String input2 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput2.start, rawInput2.end, rawInput2.buffer);
+
+      org.apache.commons.text.similarity.CosineDistance d = new org.apache.commons.text.similarity.CosineDistance();
+      double result = d.apply(input1,input2);
+      out.value = result;
+    }
+  }
+
+  @FunctionTemplate(name = "hamming_distance", scope = FunctionTemplate.FunctionScope.SIMPLE, nulls = FunctionTemplate.NullHandling.NULL_IF_NULL)
+  public static class HammingDistanceFunction implements DrillSimpleFunc {
+
+    @Param
+    VarCharHolder rawInput1;
+
+    @Param
+    VarCharHolder rawInput2;
+
+    @Output
+    Float8Holder out;
+
+    @Inject
+    DrillBuf buffer;
+
+    @Override
+    public void setup() {
+    }
+
+    @Override
+    public void eval() {
+
+      String input1 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput1.start, rawInput1.end, rawInput1.buffer);
+      String input2 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput2.start, rawInput2.end, rawInput2.buffer);
+
+      org.apache.commons.text.similarity.HammingDistance d = new org.apache.commons.text.similarity.HammingDistance();
+      double result = d.apply(input1,input2);
+      out.value = result;
+    }
+  }
+
+  @FunctionTemplate(name = "jaccard_distance", scope = FunctionTemplate.FunctionScope.SIMPLE, nulls = FunctionTemplate.NullHandling.NULL_IF_NULL)
+  public static class JaccardDistanceFunction implements DrillSimpleFunc {
+
+    @Param
+    VarCharHolder rawInput1;
+
+    @Param
+    VarCharHolder rawInput2;
+
+    @Output
+    Float8Holder out;
+
+    @Inject
+    DrillBuf buffer;
+
+    @Override
+    public void setup() {
+    }
+
+    @Override
+    public void eval() {
+
+      String input1 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput1.start, rawInput1.end, rawInput1.buffer);
+      String input2 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput2.start, rawInput2.end, rawInput2.buffer);
+
+      org.apache.commons.text.similarity.JaccardDistance d = new org.apache.commons.text.similarity.JaccardDistance();
+      double result = d.apply(input1,input2);
+      out.value = result;
+    }
+  }
+
+  @FunctionTemplate(name = "jaro_distance", scope = FunctionTemplate.FunctionScope.SIMPLE, nulls = FunctionTemplate.NullHandling.NULL_IF_NULL)
+  public static class JaroDistanceFunction implements DrillSimpleFunc {
+
+    @Param
+    VarCharHolder rawInput1;
+
+    @Param
+    VarCharHolder rawInput2;
+
+    @Output
+    Float8Holder out;
+
+    @Inject
+    DrillBuf buffer;
+
+    @Override
+    public void setup() {
+    }
+
+    @Override
+    public void eval() {
+
+      String input1 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput1.start, rawInput1.end, rawInput1.buffer);
+      String input2 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput2.start, rawInput2.end, rawInput2.buffer);
+
+      org.apache.commons.text.similarity.JaroWinklerDistance d = new org.apache.commons.text.similarity.JaroWinklerDistance();
+      double result = d.apply(input1,input2);
+      out.value = result;
+    }
+  }
+
+  @FunctionTemplate(name = "levenshtein_distance", scope = FunctionTemplate.FunctionScope.SIMPLE, nulls = FunctionTemplate.NullHandling.NULL_IF_NULL)
+  public static class LevenstheinDistanceFunction implements DrillSimpleFunc {
+
+    @Param
+    VarCharHolder rawInput1;
+
+    @Param
+    VarCharHolder rawInput2;
+
+    @Output
+    Float8Holder out;
+
+    @Inject
+    DrillBuf buffer;
+
+    @Override
+    public void setup() {
+    }
+
+    @Override
+    public void eval() {
+
+      String input1 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput1.start, rawInput1.end, rawInput1.buffer);
+      String input2 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput2.start, rawInput2.end, rawInput2.buffer);
+
+      org.apache.commons.text.similarity.LevenshteinDistance d = new org.apache.commons.text.similarity.LevenshteinDistance();
+      double result = d.apply(input1,input2);
+      out.value = result;
+    }
+  }
+
+  @FunctionTemplate(name = "longest_common_substring_distance", scope = FunctionTemplate.FunctionScope.SIMPLE, nulls = FunctionTemplate.NullHandling.NULL_IF_NULL)
+  public static class LongestCommonSubstringDistanceFunction implements DrillSimpleFunc {
+
+    @Param
+    VarCharHolder rawInput1;
+
+    @Param
+    VarCharHolder rawInput2;
+
+    @Output
+    Float8Holder out;
+
+    @Inject
+    DrillBuf buffer;
+
+    @Override
+    public void setup() {
+    }
+
+    @Override
+    public void eval() {
+
+      String input1 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput1.start, rawInput1.end, rawInput1.buffer);
+      String input2 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput2.start, rawInput2.end, rawInput2.buffer);
+
+      org.apache.commons.text.similarity.LongestCommonSubsequenceDistance d = new org.apache.commons.text.similarity.LongestCommonSubsequenceDistance();
+      double result = d.apply(input1,input2);
+      out.value = result;
+    }
+  }
+
 }
