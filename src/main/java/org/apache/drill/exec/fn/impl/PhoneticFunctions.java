@@ -23,6 +23,7 @@ import org.apache.drill.exec.expr.DrillSimpleFunc;
 import org.apache.drill.exec.expr.annotations.FunctionTemplate;
 import org.apache.drill.exec.expr.annotations.Output;
 import org.apache.drill.exec.expr.annotations.Param;
+import org.apache.drill.exec.expr.holders.BitHolder;
 import org.apache.drill.exec.expr.holders.VarCharHolder;
 
 import javax.inject.Inject;
@@ -62,7 +63,44 @@ public class PhoneticFunctions{
         }
 
     }
+  @FunctionTemplate(name = "sounds_like", scope = FunctionTemplate.FunctionScope.SIMPLE, nulls = FunctionTemplate.NullHandling.NULL_IF_NULL)
+  public static class SoundsLikeFunction implements DrillSimpleFunc {
 
+    @Param
+    VarCharHolder rawInput1;
+
+    @Param
+    VarCharHolder rawInput2;
+
+    @Output
+    BitHolder out;
+
+    @Inject
+    DrillBuf buffer;
+
+    @Override
+    public void setup() {
+    }
+
+    @Override
+    public void eval() {
+
+      String input1 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput1.start, rawInput1.end, rawInput1.buffer);
+      String input2 = org.apache.drill.exec.expr.fn.impl.StringFunctionHelpers.toStringFromUTF8(rawInput2.start, rawInput2.end, rawInput2.buffer);
+
+      String soundex1 = new org.apache.commons.codec.language.Soundex().soundex(input1);
+      String soundex2 = new org.apache.commons.codec.language.Soundex().soundex(input2);
+
+      boolean result = soundex1.equals(soundex2);
+      if( result ){
+        out.value = 1;
+      } else {
+        out.value = 0;
+      }
+
+    }
+
+  }
     @FunctionTemplate(name = "metaphone", scope = FunctionTemplate.FunctionScope.SIMPLE, nulls = FunctionTemplate.NullHandling.NULL_IF_NULL)
     public static class MetaphoneFunction implements DrillSimpleFunc {
 
