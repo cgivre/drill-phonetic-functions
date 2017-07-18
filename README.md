@@ -1,5 +1,4 @@
 # Phonetic Functions for Apache Drill
-<<<<<<< HEAD
 This repository contains a series of phonetic functions to be used with Apache Drill.  These functions are based on the algorithms found in org.apache.commons.codec.language.  This package includes Soundex, Metaphone and Double Metaphone algorithms.
 
 ## Usage
@@ -25,7 +24,6 @@ To obtain the soundex for a word, simply call the soundex function as shown belo
 SELECT soundex( <field> ) FROM <file>;
 ```
 ### Sounds Like
->>>>>>> d6671b0a26a204ca90430a01fea3703826cb013c
 There is also a `sounds_like( string1, string2 )` method which compares the soundex values of two strings and returns true if they are equal, false if not.  This is most useful in the `WHERE` clause of a Drill query where you can use it to find data similar to a known value.  For instance:
 
 ```
@@ -40,7 +38,6 @@ jdbc:drill:zk=local> select * FROM dfs.drilldev.`names.csv` WHERE sounds_like( c
 You can see the full example of everything in the query below.
 
 ```
-<<<<<<< HEAD
 jdbc:drill:zk=local> select columns[0] as name1,
 columns[1] as name2,
 soundex( columns[0] ) AS soundex_1,
