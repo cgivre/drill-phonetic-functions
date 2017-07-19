@@ -1,4 +1,4 @@
-# Phonetic Functions for Apache Drill
+# Phonetic and Distance Functions for Apache Drill
 This repository contains a series of phonetic functions to be used with Apache Drill.  These functions are based on the algorithms found in org.apache.commons.codec.language.  This package includes Soundex, Metaphone and Double Metaphone algorithms.
 
 ## Usage
@@ -55,6 +55,18 @@ FROM dfs.drilldev.`names.csv`;
 ```
 
 ## Metaphone
+This package includes an implementation of the Metaphone algorithm which you can read about [here](https://en.wikipedia.org/wiki/Metaphone).  Per wikipedia, Metaphone is a phonetic algorithm, published by Lawrence Philips in 1990, for indexing words by their English pronunciation.[1] It fundamentally improves on the Soundex algorithm by using information about variations and inconsistencies in English spelling and pronunciation to produce a more accurate encoding, which does a better job of matching words and names which sound similar. As with Soundex, similar-sounding words should share the same keys.
+
+To obtain the metaphone value of a word,
+```sql
+SELECT metaphone( 'jayme' ) AS metaphone
+FROM (values(1));
++------------+
+| metaphone  |
++------------+
+| JM         |
++------------+
+```
 
 ## Double Metaphone
 
